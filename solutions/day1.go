@@ -8,17 +8,6 @@ import (
 	"strings"
 )
 
-const sample = `two1nine
-eightwothree
-abcone2threexyz
-xtwone3four
-4nineeightseven2
-zoneight234
-7pqrstsixteen
-eightwo
-`
-const day = 1
-
 var numStringsMap = map[string]int{
 	"one":   1,
 	"two":   2,
@@ -36,8 +25,17 @@ var numStrings = []string{
 }
 
 func Day1Part1() {
+	sample := `two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen
+eightwo
+`
 	regex, _ := regexp.Compile(`(\d)`)
-	input := utils.GetInputOrSample(day, sample)
+	input := utils.GetInputOrSample(1, sample)
 	lines := strings.Split(input, "\n")
 	lines = lines[0 : len(lines)-1]
 
@@ -54,7 +52,16 @@ func Day1Part1() {
 }
 
 func Day1Part2() {
-	input := utils.GetInputOrSample(day, sample)
+	sample := `two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen
+eightwo
+`
+	input := utils.GetInputOrSample(1, sample)
 	lines := strings.Split(input, "\n")
 
 	var sum int = 0
