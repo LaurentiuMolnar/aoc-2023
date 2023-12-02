@@ -64,3 +64,9 @@ func GetInputOrSample(day uint, sample string) string {
 
 	return strings.TrimSuffix(input, "\n")
 }
+
+func GetInputOrSampleLines(day uint, sample string) []string {
+	lines := GetInputOrSample(day, sample)
+
+	return strings.Split(lines, "\n")
+}
