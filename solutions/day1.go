@@ -56,7 +56,6 @@ func Day1Part1() {
 func Day1Part2() {
 	input := utils.GetInputOrSample(day, sample)
 	lines := strings.Split(input, "\n")
-	lines = lines[0 : len(lines)-1]
 
 	var sum int = 0
 

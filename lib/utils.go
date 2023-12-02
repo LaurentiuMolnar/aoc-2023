@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	dotenv "github.com/joho/godotenv"
 )
@@ -55,11 +56,11 @@ func getInput(day uint) string {
 
 func GetInputOrSample(day uint, sample string) string {
 	var input string
-	if len(os.Args) < 2 {
+	if len(os.Args) < 2 || os.Args[1] != "--sample" {
 		input = getInput(day)
 	} else {
 		input = sample
 	}
 
-	return input
+	return strings.TrimSuffix(input, "\n")
 }
