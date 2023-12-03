@@ -70,3 +70,48 @@ func GetInputOrSampleLines(day uint, sample string) []string {
 
 	return strings.Split(lines, "\n")
 }
+
+func Sum(nums []int) int64 {
+	var sum int64 = 0
+	for _, n := range nums {
+		sum += int64(n)
+	}
+	return sum
+}
+
+func Btoi(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
+func PadInputAndSplit(input string, block rune) []string {
+	lines := strings.Split(input, "\n")
+	lineLen := len(lines[0])
+
+	var horizontalLine string = ""
+	var result []string = make([]string, len(lines)+2)
+
+	for i := 1; i <= lineLen+2; i++ {
+		horizontalLine = strings.Join([]string{horizontalLine, string(block)}, "")
+	}
+
+	for i := range result {
+		if i == 0 || i == len(result)-1 {
+			result[i] = horizontalLine
+		} else {
+			result[i] = strings.Join([]string{string(block), lines[i-1], string(block)}, "")
+		}
+	}
+
+	return result
+}
+
+func PadInput(input string, block rune) string {
+	return strings.Join(PadInputAndSplit(input, block), "\n")
+}
+
+func IsDigit(b byte) bool {
+	return '0' <= b && b <= '9'
+}
