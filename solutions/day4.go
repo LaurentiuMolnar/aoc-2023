@@ -27,10 +27,6 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11`
 		matches = 0
 		line = strings.TrimRight(strings.Split(line, ": ")[1], "\n")
 
-		// if i <= 99 {
-		// 	fmt.Println(line)
-		// }
-
 		parts = strings.Split(line, " | ")
 
 		for _, num := range strings.Split(parts[0], " ") {
@@ -111,20 +107,17 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11`
 			}
 		}
 
-		if matches == 0 {
-			continue
-		}
-
-		if i+matches > lineCount {
+		if i+matches >= lineCount {
 			bound = lineCount
 		} else {
-			bound = i + matches
+			bound = i + matches + 1
 		}
 
-		fmt.Printf(`Card %d has %d matches. We get copies of cards`, i, matches)
 		for q := i + 1; q < bound; q++ {
-			fmt.Printf("%v ", q)
+			for p := 1; p <= copies[i]; p++ {
+				copies[q]++
+			}
 		}
-		fmt.Println()
 	}
+	fmt.Println(utils.Sum(copies))
 }
