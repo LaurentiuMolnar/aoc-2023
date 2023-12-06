@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"cmp"
 	"fmt"
 	"io"
 	"log"
@@ -114,4 +115,25 @@ func PadInput(input string, block rune) string {
 
 func IsDigit(b byte) bool {
 	return '0' <= b && b <= '9'
+}
+
+func Min[T cmp.Ordered](items []T) T {
+	var min = items[0]
+
+	for i := 1; i < len(items); i++ {
+		if items[i] < min {
+			min = items[i]
+		}
+	}
+
+	return min
+}
+
+func SliceContains[T comparable](item T, slice []T) bool {
+	for i := 0; i < len(slice); i++ {
+		if item == slice[i] {
+			return true
+		}
+	}
+	return false
 }
