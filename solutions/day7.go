@@ -12,11 +12,8 @@ type Hand struct {
 	cards  string
 	sorted string
 	bid    uint
-}
-
-type Score struct {
-	value uint
-	index int
+	index  int
+	value  uint
 }
 
 var cardValues = map[rune]uint{
@@ -35,12 +32,6 @@ var cardValues = map[rune]uint{
 	'K': 13,
 	'A': 14,
 }
-
-// var pair = regexp.MustCompile(`(.){2}`)
-// var three = regexp.MustCompile(`(.){3}`)
-// var full = regexp.MustCompile(fmt.Sprintf("^%s%s|%s%s$", pair, three, three, pair))
-// var four = regexp.MustCompile(`(.){4}`)
-// var five = regexp.MustCompile(`(.)`)
 
 func IsFive(hand string) bool {
 	return hand[0] == hand[4]
@@ -62,9 +53,12 @@ func IsPair(hand string) (bool, int) {
 	for i := 0; i < len(hand)-1; i++ {
 		if hand[i] == hand[i+1] {
 			if i != len(hand)-2 {
-				return hand[i] != hand[i+2], i
+				if hand[i] != hand[i+2] {
+					return true, i
+				}
+				return false, -1
 			}
-			return true, -1
+			return true, i
 		}
 	}
 	return false, -1
@@ -80,9 +74,16 @@ func IsThree(hand string) bool {
 
 func IsTwoPair(hand string) bool {
 	ok, firstPair := IsPair(hand)
-	ok2, _ := IsPair(hand[firstPair+2:])
+	if !ok {
+		return false
+	}
 
-	return ok && ok2
+	if firstPair < 3 && hand[firstPair] == hand[firstPair+2] {
+		return false
+	}
+
+	ok, _ = IsPair(hand[firstPair+2:])
+	return ok
 }
 
 func computeScore(hand string) uint {
@@ -117,51 +118,30 @@ QQQJA 483`
 	var hands []Hand = make([]Hand, handCount)
 	var bidVal uint64
 	var cards []string = make([]string, 5)
-	var scores []Score = make([]Score, handCount)
+	var sorted string
 	var total uint = 0
 	for i, line := range input {
 		split := strings.Split(line, " ")
 		bidVal, _ = strconv.ParseUint(split[1], 10, 0)
 		cards = strings.Split(split[0], "")
 		sort.Strings(cards)
-		hands[i] = Hand{cards: split[0], bid: uint(bidVal), sorted: strings.Join(cards, "")}
-		scores[i] = Score{value: uint(computeScore(hands[i].sorted)), index: i}
+		sorted = strings.Join(cards, "")
+		hands[i] = Hand{cards: split[0], bid: uint(bidVal), sorted: sorted, index: i, value: computeScore(sorted)}
 	}
-	fmt.Printf("%+v\n", hands)
-	sort.SliceStable(scores, func(i, j int) bool {
-		return scores[i].value < scores[j].value
-	})
-	fmt.Printf("%+v\n", scores)
 
-	for i := 0; i < handCount-1; i++ {
-		fmt.Printf("Comparing %s and %s\n", hands[scores[i].index].cards, hands[scores[i+1].index].cards)
-		if scores[i].value == scores[i+1].value {
-			for j := 0; j < 5; j++ {
-				card1 := rune(hands[scores[i].index].cards[j])
-				card2 := rune(hands[scores[i+1].index].cards[j])
-				fmt.Printf("\tComparing %c and %c\n", card1, card2)
-				if card1 != card2 {
-					if cardValues[card1] > cardValues[card2] {
-						// ranks[i] = scores[i].index
-						scores[i], scores[i+1] = scores[i+1], scores[i]
-					}
-					// else {
-					// 	ranks[i] = scores[i+1].index
-
-					// }
-					break
+	sort.SliceStable(hands, func(i, j int) bool {
+		if hands[i].value == hands[j].value {
+			for k := 0; k < 5; k++ {
+				if hands[i].cards[k] != hands[j].cards[k] {
+					return cardValues[rune(hands[i].cards[k])] > cardValues[rune(hands[j].cards[k])]
 				}
-				//  else if j == 4 {
-				// 	ranks[i] = scores[i].index
-				// }
 			}
 		}
-	}
-	fmt.Printf("Ranking: %+v\n", scores)
+		return hands[i].value > hands[j].value
+	})
+
 	for i := 0; i < handCount; i++ {
-		fmt.Printf("%s ", hands[scores[i].index].cards)
-		total += (uint(i + 1)) * hands[scores[i].index].bid
+		total += hands[i].bid * (uint(handCount - i))
 	}
-	fmt.Println()
 	fmt.Println("Total:", total)
 }
