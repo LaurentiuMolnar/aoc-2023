@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	dotenv "github.com/joho/godotenv"
@@ -136,4 +137,18 @@ func SliceContains[T comparable](item T, slice []T) bool {
 		}
 	}
 	return false
+}
+
+func MapStringsToInts(strs []string) []int {
+	var result []int = make([]int, len(strs))
+
+	for i, s := range strs {
+		num, err := strconv.Atoi(s)
+
+		if err != nil {
+			log.Fatalf("Cannot convert %s to int\n", s)
+		}
+		result[i] = num
+	}
+	return result
 }
