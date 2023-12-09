@@ -4,6 +4,8 @@ import (
 	utils "aoc-2023/lib"
 	"fmt"
 	"regexp"
+
+	"modernc.org/mathutil" // it was 2 a.m., did not feel like implementing prime factorization myself
 )
 
 type HauntedNode struct {
@@ -12,16 +14,6 @@ type HauntedNode struct {
 }
 
 var lineRegex = regexp.MustCompile(`^([A-Z0-9]{3}) = \(([A-Z0-9]{3}), ([A-Z0-9]{3})\)$`)
-
-func countEnds(nodes []string) int {
-	var count int = 0
-	for _, node := range nodes {
-		if node[2] == 'Z' {
-			count++
-		}
-	}
-	return count
-}
 
 func Day8Part1() {
 	sample := `RL
@@ -94,32 +86,42 @@ XXX = (XXX, XXX)`
 			startNodes = append(startNodes, rootValue)
 		}
 	}
-	// fmt.Println(startNodes)
 
-	var count = 0
-	var destinations []string = make([]string, len(startNodes))
-	var ends = 0
+	var count uint32 = 0
+	var factors map[uint32]uint32 = make(map[uint32]uint32)
 
-	for ends != len(startNodes) {
-		for _, dir := range directions {
-			fmt.Println(startNodes, dir)
-			for i, node := range startNodes {
-				// fmt.Println(node)
+	var n string
+	var total uint64 = 1
+	for _, node := range startNodes {
+		n = node
+		count = 0
+		for n[2] != 'Z' {
+			for _, dir := range directions {
 				if dir == 'L' {
-					destinations[i] = nodes[node].left
+					n = nodes[n].left
 				} else {
-					destinations[i] = nodes[node].right
+					n = nodes[n].right
 				}
+				count++
 			}
-			// fmt.Println(destinations)
-			copy(startNodes, destinations)
-			count++
-			ends = countEnds(startNodes)
-			if ends == len(startNodes) {
-				break
+		}
+		terms := mathutil.FactorInt(count)
+
+		for _, factor := range terms {
+			_, exists := factors[factor.Prime]
+			if !exists || (exists && factors[factor.Prime] > factor.Power) {
+				factors[factor.Prime] = factor.Power
 			}
 		}
 	}
 
-	fmt.Println(count)
+	var i uint32
+	for factor, power := range factors {
+		for i = 1; i <= power; i++ {
+			total *= uint64(factor)
+		}
+	}
+
+	fmt.Println(factors)
+	fmt.Println("Total:", total)
 }
